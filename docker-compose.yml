@@ -27,6 +27,15 @@ services:
       - /media/data/config/transmission:/config
       - /media/data/transmission/downloads:/downloads
       - /media/data/transmission/watch:/watch
+  filebrowser:
+    image: hurlenko/filebrowser
+    container_name: filebrowser
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    volumes:
+      - /media/data:/data
+      - /media/data/config/filebrowser:/config
   samba:
     image: ghcr.io/servercontainers/samba
     container_name: samba
