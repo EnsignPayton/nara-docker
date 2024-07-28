@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin
+    restart: unless-stopped
+    ports:
+      - "8096:8096"
+    volumes:
+      - /media/data/media:/media:ro
+      - /media/data/config/jellyfin:/config
+      - ./jellyfin/cache:/cache
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: transmission
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    volumes:
+      - /media/data/config/transmission:/config
+      - /media/data/transmission/downloads:/downloads
+      - /media/data/transmission/watch:/watch
+  samba:
+    image: ghcr.io/servercontainers/samba
+    container_name: samba
+    restart: unless-stopped
+    environment:
+      SAMBA_VOLUME_CONFIG_data: |
+        [Data]
+          path = /shares/data
+          guest ok = yes
+          browsable = yes
+          read only = no
+    volumes:
+      - /media/data/share:/shares/data
+    ports:
+      - 445:445
